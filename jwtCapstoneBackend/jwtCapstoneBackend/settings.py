@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'authentication.apps.AuthenticationConfig',
     'corsheaders',
-    'vacations.apps.VacationsConfig',
+    'itinerary.apps.ItineraryConfig',
 ]
 
 MIDDLEWARE = [

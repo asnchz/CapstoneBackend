@@ -27,7 +27,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('body', models.CharField(max_length=100)),
-                ('itineraryId', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='vacations.itinerary')),
+                ('itineraryId', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='itinerary.itinerary')),
             ],
         ),
     ]
