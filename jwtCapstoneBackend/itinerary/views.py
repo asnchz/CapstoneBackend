@@ -68,3 +68,36 @@ def delete_review(request):
         review.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_all_locations(request):
+    locations = Location.objects.all()
+    serializer = LocationSerializer(locations, many=True)
+    return Response(serializer.data)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def user_location(request):
+    locations = Location.objects.filter(user_id=request.user.id)
+    serializer = LocationSerializer(locations, many=True)
+    return Response(serializer.data)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def post_location(request):
+    if request.method == 'POST':
+        serializer = LocationSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(user=request.user)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def delete_location(request):
+    if request.method == 'DELETE':
+        location = Location.objects.filter(user_id=request.user.id)
+        location.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
