@@ -61,7 +61,14 @@ def user_reviews(request):
         reviews = Review.objects.filter(user_id=request.user.id)
         serializer = ReviewSerializer(reviews, many=True)
         return Response(serializer.data)
-    
+
+@api_view(['DELETE'])
+@permission_classes([AllowAny])
+def delete_review(request):
+    if request.method == 'DELETE':
+        review = Review.objects.filter(user_id=request.user.id)
+        review.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
     
 @api_view(['GET'])
 @permission_classes([AllowAny])
