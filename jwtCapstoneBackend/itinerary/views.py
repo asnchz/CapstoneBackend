@@ -4,8 +4,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.decorators import api_view, permission_classes
-from .models import Itinerary, Review
-from .serializers import ItinerarySerializer, ReviewSerializer
+from .models import Itinerary, Review, Location, ItineraryDestinations
+from .serializers import ItinerarySerializer, ReviewSerializer, LocationSerializer, ItineraryDestinationsSerializer
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
@@ -18,7 +18,7 @@ def get_all_itineraries(request):
     return Response(serializer.data)
 
 @api_view(['POST', 'GET'])
-@permission_classes([IsAuthenticated])
+@permission_classes([AllowAny])
 def user_itinerary(request):
     if request.method == 'POST':
         serializer = ItinerarySerializer(data=request.data)
@@ -32,7 +32,7 @@ def user_itinerary(request):
         return Response(serializer.data)
 
 @api_view(['DELETE'])
-@permission_classes([IsAuthenticated])
+@permission_classes([AllowAny])
 def delete_itinerary(request):
     if request.method == 'DELETE':
         itinerary = Itinerary.objects.filter(user_id=request.user.id)
@@ -46,9 +46,11 @@ def get_all_reviews(request):
     serializer = ReviewSerializer(reviews, many=True)
     return Response(serializer.data)
 
+
 @api_view(['POST', 'GET'])
-@permission_classes([AllowAny])
-def post_review(request):
+@permission_classes([IsAuthenticated])
+def user_reviews(request):
+    
     if request.method == 'POST':
         serializer = ReviewSerializer(data=request.data)
         if serializer.is_valid():
@@ -56,48 +58,54 @@ def post_review(request):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     elif request.method == 'GET':
-        reviews = Review.objects.filter(user_id=itinerary_id)
-        serializer = ReviewSerializer(Reviews, many=True)
+        reviews = Review.objects.filter(user_id=request.user.id)
+        serializer = ReviewSerializer(reviews, many=True)
         return Response(serializer.data)
-
-@api_view(['DELETE'])
-@permission_classes([IsAuthenticated])
-def delete_review(request):
-    if request.method == 'DELETE':
-        review = Review.objects.filter(user_id=request.user.id)
-        review.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
-
+    
+    
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
+@permission_classes([AllowAny])
 def get_all_locations(request):
     locations = Location.objects.all()
     serializer = LocationSerializer(locations, many=True)
     return Response(serializer.data)
 
-@api_view(['GET'])
-@permission_classes([IsAuthenticated])
-def user_location(request):
-    locations = Location.objects.filter(user_id=request.user.id)
-    serializer = LocationSerializer(locations, many=True)
-    return Response(serializer.data)
 
-@api_view(['POST'])
+@api_view(['POST', 'GET'])
 @permission_classes([IsAuthenticated])
-def post_location(request):
+def user_locations(request):
+    
     if request.method == 'POST':
         serializer = LocationSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save(user=request.user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    elif request.method == 'GET':
+        locations = Location.objects.filter(user_id=request.user.id)
+        serializer = LocationSerializer(locations, many=True)
+        return Response(serializer.data)
+    
+    
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def get_all_itinDestinations(request):
+    itinDestinations = ItineraryDestinations.objects.all()
+    serializer = ItineraryDestinationsSerializer(itinDestinations, many=True)
+    return Response(serializer.data)
 
-@api_view(['DELETE'])
+
+@api_view(['POST', 'GET'])
 @permission_classes([IsAuthenticated])
-def delete_location(request):
-    if request.method == 'DELETE':
-        location = Location.objects.filter(user_id=request.user.id)
-        location.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+def user_itinDestinations(request):
 
-
+    if request.method == 'POST':
+        serializer = ItineraryDestinationsSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(user=request.user)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    elif request.method == 'GET':
+        itinDestinations = ItineraryDestinations.objects.filter(user_id=request.user.id)
+        serializer = ItineraryDestinationsSerializer(itinDestinations, many=True)
+        return Response(serializer.data)
