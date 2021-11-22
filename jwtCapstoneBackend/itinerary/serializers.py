@@ -15,7 +15,7 @@ class ReviewSerializer(serializers.ModelSerializer):
 class ItinerarySerializer(serializers.ModelSerializer):
     class Meta:
         model = Itinerary
-        fields = ['id', 'user_id', 'details', 'review_id']
+        fields = ['id', 'user_id', 'details', 'location_id', 'review_id']
 
 class ItineraryDestinationsSerializer(serializers.ModelSerializer):
     class Meta:

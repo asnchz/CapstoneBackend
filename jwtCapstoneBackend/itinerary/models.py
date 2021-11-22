@@ -16,6 +16,7 @@ class Review(models.Model):
 class Itinerary(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     details = models.CharField(max_length=200)
+    location =  models.ForeignKey(Location, on_delete=models.CASCADE)
     review = models.ForeignKey(Review, on_delete=models.CASCADE)
 
 class ItineraryDestinations(models.Model):
